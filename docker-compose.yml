@@ -1,23 +1,22 @@
 ---
-
-# Added Kafka and Zookeeper. Each one is runnning with 2 containers for achieve redundancy.
+# docker compose up -d && docker exec -it redpanda-0 rpk topic create -c cleanup.policy=compact -r 3 -p 20 doido3
 version: "3.9"
-name: notification-context
+name: notification-service
 networks:
   redpanda_network:
     driver: bridge
   backend_network:
     driver: bridge
 volumes:
-  redpanda: null
-  postgres: {}
-
+  redpanda-0: null
+  redpanda-1: null
+  redpanda-2: null
+  postgres-data:
 services:
-  # Redis for transaction validation
   cache:
     image: redis:alpine
     ports:
-      - "6379"
+      - '6379:6379'
     networks:
       - backend_network
 
@@ -28,6 +27,7 @@ services:
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
+      - POSTGRES_MULTIPLE_DATABASE="notification_service"
     logging:
       options:
         max-size: 10m
@@ -35,93 +35,126 @@ services:
     ports:
       - '5432:5432'
     volumes: 
-      - postgres:/var/lib/postgresql/data
+      - ./src/main/resources/db/create_database.sql:/docker-entrypoint-initdb.d/create_database.sql
     networks:
       - backend_network
 
-  redpanda:
-    image: docker.redpanda.com/redpandadata/redpanda:v23.1.1
+  redpanda-0:
     command:
-      - redpanda start
+      - redpanda
+      - start
+      - --kafka-addr internal://0.0.0.0:9092,external://0.0.0.0:19092
+      # Address the broker advertises to clients that connect to the Kafka API.
+      # Use the internal addresses to connect to the Redpanda brokers'
+      # from inside the same Docker network.
+      # Use the external addresses to connect to the Redpanda brokers'
+      # from outside the Docker network.
+      - --advertise-kafka-addr internal://redpanda-0:9092,external://localhost:19092
+      - --pandaproxy-addr internal://0.0.0.0:8082,external://0.0.0.0:18082
+      # Address the broker advertises to clients that connect to the HTTP Proxy.
+      - --advertise-pandaproxy-addr internal://redpanda-0:8082,external://localhost:18082
+      - --schema-registry-addr internal://0.0.0.0:8081,external://0.0.0.0:18081
+      # Redpanda brokers use the RPC API to communicate with eachother internally.
+      - --rpc-addr redpanda-0:33145
+      - --advertise-rpc-addr redpanda-0:33145
+      # Tells Seastar (the framework Redpanda uses under the hood) to use 1 core on the system.
       - --smp 1
-      - --overprovisioned
-      - --kafka-addr PLAINTEXT://0.0.0.0:29092,OUTSIDE://0.0.0.0:9092
-      - --advertise-kafka-addr PLAINTEXT://redpanda:29092,OUTSIDE://localhost:9092
-      - --pandaproxy-addr 0.0.0.0:8082
-      - --advertise-pandaproxy-addr localhost:8082
-    ports:
-      - 8081:8081
-      - 8082:8082
-      - 9092:9092
-      - 9644:9644
-      - 29092:29092
+      # The amount of memory to make available to Redpanda.
+      - --memory 1G
+      # Mode dev-container uses well-known configuration properties for development in containers.
+      - --mode dev-container
+      # enable logs for debugging.
+      - --default-log-level=debug
+    image: docker.redpanda.com/redpandadata/redpanda:v23.1.1
+    container_name: redpanda-0
     volumes:
-      - redpanda:/var/lib/redpanda/data
+      - redpanda-0:/var/lib/redpanda/data
     networks:
       - redpanda_network
+    ports:
+      - 18081:18081
+      - 18082:18082
+      - 19092:19092
+      - 19644:9644
+  redpanda-1:
+    command:
+      - redpanda
+      - start
+      - --kafka-addr internal://0.0.0.0:9092,external://0.0.0.0:29092
+      - --advertise-kafka-addr internal://redpanda-1:9092,external://localhost:29092
+      - --pandaproxy-addr internal://0.0.0.0:8082,external://0.0.0.0:28082
+      - --advertise-pandaproxy-addr internal://redpanda-1:8082,external://localhost:28082
+      - --schema-registry-addr internal://0.0.0.0:8081,external://0.0.0.0:28081
+      - --rpc-addr redpanda-1:33145
+      - --advertise-rpc-addr redpanda-1:33145
+      - --smp 1
+      - --memory 1G
+      - --mode dev-container
+      - --default-log-level=debug
+      - --seeds redpanda-0:33145
+    image: docker.redpanda.com/redpandadata/redpanda:v23.1.1
+    container_name: redpanda-1
+    volumes:
+      - redpanda-1:/var/lib/redpanda/data
+    networks:
+      - redpanda_network
+    ports:
+      - 28081:28081
+      - 28082:28082
+      - 29092:29092
+      - 29644:9644
+    depends_on:
+      - redpanda-0
+  redpanda-2:
+    command:
+      - redpanda
+      - start
+      - --kafka-addr internal://0.0.0.0:9092,external://0.0.0.0:39092
+      - --advertise-kafka-addr internal://redpanda-2:9092,external://localhost:39092
+      - --pandaproxy-addr internal://0.0.0.0:8082,external://0.0.0.0:38082
+      - --advertise-pandaproxy-addr internal://redpanda-2:8082,external://localhost:38082
+      - --schema-registry-addr internal://0.0.0.0:8081,external://0.0.0.0:38081
+      - --rpc-addr redpanda-2:33145
+      - --advertise-rpc-addr redpanda-2:33145
+      - --smp 1
+      - --memory 1G
+      - --mode dev-container
+      - --default-log-level=debug
+      - --seeds redpanda-0:33145
+    image: docker.redpanda.com/redpandadata/redpanda:v23.1.1
+    container_name: redpanda-2
+    volumes:
+      - redpanda-2:/var/lib/redpanda/data
+    networks:
+      - redpanda_network
+    ports:
+      - 38081:38081
+      - 38082:38082
+      - 39092:39092
+      - 39644:9644
+    depends_on:
+      - redpanda-0
 
-# Redpanda -> Kafka C++ implementation with zookeeper free (like experimental kafka kraft)
-  # Redpanda Console -> Front-end for kafka admin panel
   redpanda-console:
+    container_name: redpanda-console
     image: docker.redpanda.com/redpandadata/console:v2.2.2
+    networks:
+      - redpanda_network
     entrypoint: /bin/sh
-    command: -c "echo \"$$CONSOLE_CONFIG_FILE\" > /tmp/config.yml; /app/console"
+    command: -c 'echo "$$CONSOLE_CONFIG_FILE" > /tmp/config.yml; /app/console'
     environment:
       CONFIG_FILEPATH: /tmp/config.yml
       CONSOLE_CONFIG_FILE: |
         kafka:
-          brokers: ["redpanda:29092"]
+          brokers: ["redpanda-0:9092"]
           schemaRegistry:
             enabled: true
-            urls: ["http://redpanda:8081"]
+            urls: ["http://redpanda-0:8081"]
         redpanda:
           adminApi:
             enabled: true
-            urls: ["http://redpanda:9644"]
-        connect:
-          enabled: true
-          clusters:
-            - name: local-connect-cluster
-              url: http://connect:8083
+            urls: ["http://redpanda-0:9644"]
     ports:
       - 8080:8080
-    networks:
-      - redpanda_network
     depends_on:
-      - redpanda
-
-  # Curious about how to use this, however, is not necessary today.
-  # connect:
-  #   image: docker.redpanda.com/redpandadata/connectors:latest
-  #   hostname: connect
-  #   container_name: connect
-  #   networks:
-  #     - redpanda_network
-  #   platform: 'linux/amd64'
-  #   depends_on:
-  #     - redpanda
-  #   ports:
-  #     - "8083:8083"
-  #   environment:
-  #     CONNECT_CONFIGURATION: |
-  #         key.converter=org.apache.kafka.connect.converters.ByteArrayConverter
-  #         value.converter=org.apache.kafka.connect.converters.ByteArrayConverter
-  #         group.id=connectors-cluster
-  #         offset.storage.topic=_internal_connectors_offsets
-  #         config.storage.topic=_internal_connectors_configs
-  #         status.storage.topic=_internal_connectors_status
-  #         config.storage.replication.factor=-1
-  #         offset.storage.replication.factor=-1
-  #         status.storage.replication.factor=-1
-  #         offset.flush.interval.ms=1000
-  #         producer.linger.ms=50
-  #         producer.batch.size=131072
-  #     CONNECT_BOOTSTRAP_SERVERS: redpanda:29092
-  #     CONNECT_GC_LOG_ENABLED: "false"
-  #     CONNECT_HEAP_OPTS: -Xms512M -Xmx512M
-  #     CONNECT_LOG_LEVEL: info
-
-
-
-
-
+      - redpanda-0
