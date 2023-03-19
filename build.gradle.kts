@@ -7,8 +7,11 @@ plugins {
 	kotlin("plugin.spring") version "1.7.22"
 }
 
+springBoot {
+	mainClass.set("com.github.bgvit.notificationservice.notificationservice.NotificationServiceApplicationKt")
+}
 group = "com.github.bgvit.notification-service"
-version = "0.0.1-SNAPSHOT"
+version = "1.0"
 java.sourceCompatibility = JavaVersion.VERSION_17
 
 repositories {

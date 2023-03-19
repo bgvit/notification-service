@@ -13,31 +13,51 @@ volumes:
   redpanda-2: null
   postgres-data:
 services:
+  notification-service:
+    container_name: notification-service
+    build:
+      #context: caso tenha uma pasta diferente, especificar aqui.
+      dockerfile: Dockerfile
+    image: bgvit/notification-service:2.6
+    ports:
+      - '8096:8096'
+    networks:
+      - redpanda_network
+    environment:
+      - REDIS_HOST_URL=cache
+      - SPRING_DATASOURCE_PASSWORD=postgres
+      - SPRING_DATASOURCE_URL=r2dbc:pool:postgresql://db:5432/postgres
+      - SPRING_DATASOURCE_USERNAME=postgres
+    restart:  on-failure
+    depends_on:
+#      - redpanda-0
+      - cache
+      - db
+
   cache:
+    container_name: cache
     image: redis:alpine
     ports:
       - '6379:6379'
-    networks:
-      - backend_network
 
   # postgres to record notification audit and client's account information
   db:
-    image: postgres:latest
+    container_name: db
+    image: postgres:15.2
     restart: always
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_MULTIPLE_DATABASE="notification_service"
-    logging:
-      options:
-        max-size: 10m
-        max-file: "3"
     ports:
       - '5432:5432'
-    volumes: 
+    volumes:
       - ./src/main/resources/db/create_database.sql:/docker-entrypoint-initdb.d/create_database.sql
-    networks:
-      - backend_network
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   redpanda-0:
     command:
@@ -155,6 +175,6 @@ services:
             enabled: true
             urls: ["http://redpanda-0:9644"]
     ports:
-      - 8080:8080
+      - 8082:8080
     depends_on:
       - redpanda-0
