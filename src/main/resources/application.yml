@@ -1,13 +1,17 @@
 server:
-  port: 8086
+  port: 8080
 spring:
   r2dbc:
-    url: ${SPRING_DATASOURCE_URL}
-    username: ${SPRING_DATASOURCE_USERNAME}
-    password: ${SPRING_DATASOURCE_PASSWORD}
+    url: r2dbc:postgresql://${POSTGRES_ADDRESS}:5432/postgres
+    username: ${POSTGRES_USER:postgres}
+    password: ${POSTGRES_PASSWORD:postgres}
   data:
     redis:
       database: 0
-      host: ${REDIS_HOST_URL}
+      host: ${REDIS_URL}
       port: 6379
       timeout: 120
+
+notification-service:
+  client:
+    push: http://google.com.br
