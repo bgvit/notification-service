@@ -4,5 +4,5 @@ import com.github.bgvit.notificationservice.notificationservice.model.dto.Notifi
 
 interface NotificationSender {
     suspend fun shouldSend(notification: NotificationRequest): Boolean
-    suspend fun send(notification: NotificationRequest) : Boolean
+    suspend fun send(notification: NotificationRequest): Boolean
 }

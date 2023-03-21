@@ -24,7 +24,7 @@ class NtfyService(
         return isContainedOnAllowedTypes(notification.notificationType)
     }
 
-    override suspend fun send(notification: NotificationRequest) : Boolean {
+    override suspend fun send(notification: NotificationRequest): Boolean {
         return try {
             PushService.webClient.post()
                 .bodyValue(notification)

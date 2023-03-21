@@ -36,7 +36,7 @@ class PushService(
                 .ifModifiedSince(ZonedDateTime.now())
                 .retrieve()
 
-                true
+            true
         } catch (t: WebClientException) {
             /*
             If the application enter is this exception, it means that the server

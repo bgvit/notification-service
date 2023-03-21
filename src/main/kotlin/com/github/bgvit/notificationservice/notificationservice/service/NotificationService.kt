@@ -7,11 +7,10 @@ import org.springframework.stereotype.Service
 class NotificationService(val senders: List<NotificationSender>) {
 
     suspend fun addNewNotification(notification: NotificationRequest) {
-
-
         val wasSent = senders.forEach {
-            if (it.shouldSend(notification))
+            if (it.shouldSend(notification)) {
                 it.send(notification)
+            }
         }
     }
 }
