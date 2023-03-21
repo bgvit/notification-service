@@ -13,5 +13,8 @@ spring:
       timeout: 120
 
 notification-service:
-  client:
-    push: http://google.com.br
+  ntfy:
+    url: 'ntfy.sh/'
+    topic: 'exampleaeiou'
+  push:
+    url: 'www.google.com.br'

@@ -8,12 +8,8 @@ data class Notification(
     val id: String,
     val notificationType: NotificationType,
     val notificationMessage: String,
-    val deliveryDate: ZonedDateTime,
+    val deliveryDate: ZonedDateTime = ZonedDateTime.now(),
     val accountId: String,
-    val isReady: Boolean?,
+    val isReady: Boolean = true,
     val wasSent: Boolean?
 )
-
-enum class NotificationType {
-    PUSH, SMS
-}
