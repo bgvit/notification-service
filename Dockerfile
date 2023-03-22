@@ -11,7 +11,7 @@ RUN ./gradlew build -x test
 # - JRE only to run the server, not necessary JDK to run it;
 # - tiny size;
 # - lack of known security vulnerabilities.
-FROM eclipse-temurin:17-jre-alpine
+FROM eclipse-temurin:17
 # Run as non-root for security purposes
 RUN addgroup simplegroup; adduser  --ingroup simplegroup --disabled-password simpleuser
 USER simpleuser
