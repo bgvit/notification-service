@@ -15,8 +15,6 @@
 .idea
 
 /build
-/gradle/wrapper
-.gradle/
 HELP.md
 
 # Mobile Tools for Java (J2ME)
