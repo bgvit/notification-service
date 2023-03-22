@@ -2,10 +2,12 @@ server:
   port: 8080
 spring:
   r2dbc:
-    url: r2dbc:postgresql://${POSTGRES_ADDRESS}:5432/postgres
+    url: r2dbc:postgresql://${POSTGRES_ADDRESS}:5432/postgres?schema=notification_service
+    address: ${POSTGRES_ADDRESS}
     username: ${POSTGRES_USER:postgres}
     password: ${POSTGRES_PASSWORD:postgres}
-  data:
+
+
     redis:
       database: 0
       host: ${REDIS_URL}
@@ -14,7 +16,9 @@ spring:
 
 notification-service:
   ntfy:
-    url: 'ntfy.sh/'
-    topic: 'exampleaeiou'
+    url: 'https://ntfy.sh/'
+    topic: 'carolina_lembrar'
   push:
     url: 'www.google.com.br'
+  cache:
+    ttl: 2

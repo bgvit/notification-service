@@ -5,7 +5,7 @@ import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 
 interface NotificationRepository {
-    fun getAll(): Flux<Notification>
-    fun addNew(notification: Notification): Mono<Void>
-    fun getById(id: String): Mono<Notification>
+    suspend fun getById(id: String): Mono<Notification>
+    suspend fun save(notification: Notification): Mono<Void>
+    suspend fun getAll(): Flux<Notification>
 }

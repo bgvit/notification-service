@@ -2,38 +2,26 @@ package com.github.bgvit.notificationservice.notificationservice.thirdparty
 
 import com.github.bgvit.notificationservice.notificationservice.model.NotificationType
 import com.github.bgvit.notificationservice.notificationservice.model.dto.NotificationRequest
-import com.github.bgvit.notificationservice.notificationservice.service.NotificationSender
+import com.github.bgvit.notificationservice.notificationservice.service.interfaces.NotificationSender
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.WebClientException
-import java.nio.charset.StandardCharsets
-import java.time.ZonedDateTime
+import reactor.core.publisher.Mono
 
 @Component
-class PushService(
+class PushSender(
     @Value("\${notification-service.push.url}") val url: String
 ) : NotificationSender {
 
-    companion object {
-        val webClient: WebClient = WebClient.builder().baseUrl("$this.url").build()
-    }
-
-    override suspend fun shouldSend(notification: NotificationRequest): Boolean {
-        return isContainedOnAllowedTypes(notification.notificationType)
-    }
+    companion object val webClient: WebClient = WebClient.create("$url")
 
     override suspend fun send(notification: NotificationRequest): Boolean {
         return try {
             webClient.post()
-                .bodyValue(notification)
-                .accept(MediaType.APPLICATION_JSON)
-                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                .acceptCharset(StandardCharsets.UTF_8)
-                .ifNoneMatch("*")
-                .ifModifiedSince(ZonedDateTime.now())
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(Mono.just(notification.notificationMessage), String::class.java)
                 .retrieve()
 
             true
@@ -50,6 +38,5 @@ class PushService(
         }
     }
 
-    private fun isContainedOnAllowedTypes(requestType: NotificationType) =
-        requestType.equals(NotificationType.PUSH)
+    override fun getStrategyName(): NotificationType = NotificationType.PUSH
 }

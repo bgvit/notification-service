@@ -1,11 +1,11 @@
 package com.github.bgvit.notificationservice.notificationservice.model.dto
 
-import com.github.bgvit.notificationservice.notificationservice.model.NotificationType
 import java.time.ZonedDateTime
 
 data class NotificationRequest(
-    val notificationType: NotificationType,
+    val accountId: String,
+    val notificationType: String,
     val notificationMessage: String,
-    val deliveryDate: ZonedDateTime = ZonedDateTime.now(),
+    val deliveryDate: String = ZonedDateTime.now().toString(),
     val isReady: Boolean = true
 )

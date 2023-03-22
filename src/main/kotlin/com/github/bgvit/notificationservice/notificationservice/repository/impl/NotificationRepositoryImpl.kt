@@ -12,15 +12,15 @@ import reactor.core.publisher.Mono
 @Repository
 class NotificationRepositoryImpl(private val r2dbcEntityTemplate: R2dbcEntityTemplate) : NotificationRepository {
 
-    override fun getAll(): Flux<Notification> {
+    override suspend fun getAll(): Flux<Notification> {
         return r2dbcEntityTemplate.select(Notification::class.java).all()
     }
 
-    override fun addNew(notification: Notification): Mono<Void> {
+    override suspend fun save(notification: Notification): Mono<Void> {
         return r2dbcEntityTemplate.insert(notification).then()
     }
 
-    override fun getById(id: String): Mono<Notification> {
+    override suspend fun getById(id: String): Mono<Notification> {
         return r2dbcEntityTemplate.selectOne(Query.query(Criteria.where("id").`is`(id)), Notification::class.java)
     }
 }

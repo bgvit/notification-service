@@ -5,7 +5,7 @@ data class NtfyNotification(
     val message: String?
 )
 
-/*
+/*TODO(
 Later I will improve this API, because I really want to
 use all features of Ntfy. More information: https://docs.ntfy.sh/publish/
 
@@ -18,4 +18,5 @@ val attach: String?,
 val filename: String?,
 val click: String?,
 val actions: List<Map<String, String>>?
- */
+)
+*/
