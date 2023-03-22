@@ -1,5 +1,5 @@
 server:
-  port: 8080
+  port: 7000
 spring:
   r2dbc:
     url: r2dbc:postgresql://${POSTGRES_ADDRESS}:5432/postgres?schema=notification_service
