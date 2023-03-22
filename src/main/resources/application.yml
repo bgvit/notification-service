@@ -6,19 +6,23 @@ spring:
     address: ${POSTGRES_ADDRESS}
     username: ${POSTGRES_USER:postgres}
     password: ${POSTGRES_PASSWORD:postgres}
-
-
     redis:
       database: 0
       host: ${REDIS_URL}
       port: 6379
       timeout: 120
-
+  kafka:
+    bootstrap-servers: localhost:39092, localhost:29092, localhost:19092
 notification-service:
   ntfy:
     url: 'https://ntfy.sh/'
-    topic: 'carolina_lembrar'
+    topic: 'exemplo_aeiou'
   push:
     url: 'www.google.com.br'
   cache:
     ttl: 2
+  kafka:
+    topic: notification-consumer
+    group-id: notification-service
+    partition-number: 2
+    replication-factor: 3

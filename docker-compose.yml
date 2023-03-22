@@ -1,5 +1,4 @@
 ---
-# docker compose up -d && docker exec -it redpanda-0 rpk topic create -c cleanup.policy=compact -r 3 -p 20 doido3
 version: "3.9"
 services:
   cache:
@@ -10,7 +9,6 @@ services:
       - '6379:6379'
     restart: always
 
-  # postgres to record notification audit and client's account information
   db:
     image: postgres:15.2
     networks:
@@ -150,7 +148,6 @@ services:
     image: bgvit/notification-service:2.6
     networks:
       - backend
-    restart: always
     ports:
       - "8080:8080"
     env_file:
@@ -158,11 +155,12 @@ services:
     depends_on:
       - cache
       - db
+      - redpanda-0
 networks:
   backend:
     driver: bridge
 volumes:
   postgres-data:
-#  redpanda-0:
-#  redpanda-1:
-#  redpanda-2:
+  redpanda-0:
+  redpanda-1:
+  redpanda-2:
