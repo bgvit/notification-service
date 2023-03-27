@@ -31,7 +31,7 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
     implementation("org.springframework:spring-jdbc")
-    //TODO(Implement circuit breaker mechanism, later)
+    // TODO(Implement circuit breaker mechanism, later)
     // implementation("org.springframework.cloud:spring-cloud-starter-circuitbreaker-reactor-resilience4j")
     implementation("com.github.ksuid:ksuid:1.1.2")
     // https://mvnrepository.com/artifact/org.springframework.kafka/spring-kafka

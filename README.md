@@ -58,31 +58,36 @@ Ele irá rastrear por notificações que não foram enviadas de tempos e tempos 
 		"id" : "2NJ14ffd3iToJlzpcgqEf6D31ff",
 		"account_name" : "Bernardo",
 		"created_on" : "2023-03-22T16:20:27.572Z",
-		"updated_on" : null
+		"updated_on" : null,
+		"opt_in" : true
 	},
 	{
 		"id" : "2NJ14d4P9F33AgkN4FlSV4q9sgD",
 		"account_name" : "Daniel",
 		"created_on" : "2023-03-22T16:20:27.573Z",
-		"updated_on" : null
+		"updated_on" : null,
+		"opt_in" : true
 	},
 	{
 		"id" : "2NJ14bt7YN8YnpUrTbXqgwsnwrk",
 		"account_name" : "Nilson",
 		"created_on" : "2023-03-22T16:20:27.574Z",
-		"updated_on" : null
+		"updated_on" : null,
+		"opt_in" : true
 	},
 	{
 		"id" : "2NJ14dXPE6kb4jRhjDQB1IwJD47",
 		"account_name" : "Diego",
 		"created_on" : "2023-03-22T16:20:27.575Z",
-		"updated_on" : null
+		"updated_on" : null,
+		"opt_in" : true
 	},
 	{
 		"id" : "2NJ14aovE6y0z5a23MnefFEkJrA",
 		"account_name" : "Marcus",
 		"created_on" : "2023-03-22T16:20:27.575Z",
-		"updated_on" : null
+		"updated_on" : null,
+		"opt_in" : true
 	}
 }
 ```

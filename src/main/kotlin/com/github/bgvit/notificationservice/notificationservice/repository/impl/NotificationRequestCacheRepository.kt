@@ -37,7 +37,7 @@ class NotificationRequestCacheRepository(
             try {
                 val result = reactiveValueOps.get(generateKey(notificationRequest)).awaitSingleOrNull()
                 result != null
-            } catch(t: Throwable) {
+            } catch (t: Throwable) {
                 /* Some problem happened with integration on Redis, if the codes have felt here.
                  In this case, the application will ignore these validations.
                  I will put log here later. todo() */
