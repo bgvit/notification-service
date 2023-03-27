@@ -2,7 +2,7 @@
 
 
 ## Objetivo
-Esse projeto exercita a criação de uma arquitetura escalável. Para isso, foi colocado o esforço em contexto de envio de notificações para usuários.
+Esse projeto exercita a criação de uma arquitetura escalável para enviar notificações para usuários em diferentes canais.
 
 - Para rodá-lo use o comando: `docker compose up -d`.
 
@@ -10,7 +10,7 @@ Esse projeto exercita a criação de uma arquitetura escalável. Para isso, foi 
 # Detalhes
 Como o desafio tinha o foco em escalabilidade e resiliência, montei dois microserviços com responsabilidades diferentes:
 
-### notification-service(está funcional, porém, estou encontrando problemas ao rodá-lo com todo o ambiente no `docker compose` e ainda não achei a solução. O microserviço eventualmente para de conectar às dependências externas apesar de estar usando corretamente a rede interna do docker.). Caso você não tenha esse problema, ele praticamente está pronto, exceto pela falta de implementação do consumo do tópico do RedPanda.
+### notification-service
 
     Esse microserviço, investi muito esforço de qualidade nele. Ele é responsável por adicionar as notificações no banco e enviá-las aos usuários (conforme o tipo).
 
@@ -22,26 +22,28 @@ Como o desafio tinha o foco em escalabilidade e resiliência, montei dois micros
 
     - Adição no banco de dados de notificações que foram agendadas e outras a serem enviadas.
 
-### notification-watch (não está funcional):
+### notification-job (não está  totalmente funcional):
 
-É uma "espécie" de cron (só que não "morre"). Ele irá rastrear por notificações que não foram enviadas de tempos e tempos e enviar para o tópico para ser consumido pelo `notification-service`. Não está completo e está com bugs, mas já demonstra a ideia arquitetural "da coisa".
+Serviço responsável por rodar rotina para ler o banco (no futuro será um cron-job).
+Ele irá rastrear por notificações que não foram enviadas de tempos e tempos e enviar para o tópico para ser consumido pelo `notification-service`. Não está completo e está com bugs, mas já demonstra a ideia arquitetural "da coisa".
 
 
 - Pontos a melhorar:
     - Ambos os microserviços carecem de testes automatizados e enriquecimento de logs;
     - Seria interessante adicionar um mecanismos de `migration`de banco de dados como `liquibase`ou `flyway`
-    - O projeto não é a ideal. Os próximos passos desse projeto serão para concretizar a arquitetura pensada originalmente mas que não foi possível desenvolver no tempo previsto (colocarei a imagem da arquitetura pensada aqui logo após enviar esse projeto).
+    - O projeto não é o ideal. Os próximos passos desse projeto serão para concretizar a arquitetura pensada originalmente mas que não foi possível desenvolver no tempo previsto (colocarei a imagem da arquitetura pensada aqui logo após enviar esse projeto).
 
-## Componentes
+# Componentes
+
     - RedPanda: É uma implementação de Kafka escrita em C++ e que já é `production ready`no uso da nova arquitetura que dispensa um container de `schema registry`que um algoritmo chamado `Raft`de consenso para sincronizar os dados, algo assim.
 
     - Redis: Ferramenta de cache
 
     - PostgreSQL: Banco de dados para guardar as notificações e contas de usuário.
 
-    - Notification-service
+    - Notification-service: Serviço pensado para enviar notificações de diferentes tipos.
 
-    - Notification-watch
+    - Notification-job: Serviço ou job pensado para ler quais notificações estão atrasadas e notificar os outros componentes da necessidade do envio deste evento.
 
 
 # Id de contas:
@@ -87,11 +89,23 @@ Como o desafio tinha o foco em escalabilidade e resiliência, montei dois micros
 
     }
 
+# Diagramas:
+  - Os diagramas estão na pasta `diagrams`. Temos dois:
+    - Project - as is -> Como o projeto está atualmente; 
+    - Project - as I want to be -> Desenho da arquitetura que chegarei em breve.
 
-Em que ponto chegou(para abrir o diagrama, só ir no site (excalidraw.com/)[excalidraw.com/]:
+## Imagens dos Diagramas
+
+### As is:
 
 ![Como está](https://user-images.githubusercontent.com/51809748/227026931-1464a7ee-51f2-4604-97ce-00d433da61d3.svg)
 
+### As I want to be:
 
-Os próximos passos se darão até ele chegar no ponto abaixo:
+![Como estará](https://user-images.githubusercontent.com/51809748/227820404-845b69ba-5fe8-4e22-8f47-ea0903b69ea4.svg)
 
+# Referências:
+
+- [Scheduling Millions Of Messages With Kafka & Debezium](https://medium.com/yotpoengineering/scheduling-millions-of-messages-with-kafka-debezium-6d1a105160c)
+- [Using Debezium and Redpanda for CDC](https://redpanda.com/blog/redpanda-debezium)
+- [https://www.richyhbm.co.uk/posts/kotlin-docker-spring-oh-my/](Kotlin and Docker and Spring, Oh my!)

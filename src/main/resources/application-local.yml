@@ -2,13 +2,13 @@ server:
   port: 7000
 spring:
   r2dbc:
-    url: r2dbc:postgresql://db:5432/postgres?schema=notification_service
-    address: ${POSTGRES_ADDRESS}
-    username: ${POSTGRES_USER:postgres}
-    password: ${POSTGRES_PASSWORD:postgres}
+    url: r2dbc:postgresql://localhost:5432/postgres?schema=notification_service
+    address: localhost
+    username: postgres
+    password: postgres
     redis:
       database: 0
-      host: cache
+      host: localhost
       port: 6379
       timeout: 120
   kafka:

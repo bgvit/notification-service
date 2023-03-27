@@ -22,15 +22,27 @@ class NotificationRequestCacheRepository(
 
     suspend fun addNewNotificationRequest(notificationRequest: NotificationRequest) = coroutineScope {
         launch {
-            val key = generateKey(notificationRequest)
-            reactiveValueOps.setAndAwait(key, key, Duration.ofMinutes(ttl))
+            try {
+                val key = generateKey(notificationRequest)
+                reactiveValueOps.setAndAwait(key, key, Duration.ofMinutes(ttl))
+            } catch (t: Throwable) {
+                /*If the code have fallen here, probably some integration problem happened with redis.
+                * The application will ignore in this case. I'll put logo here later. todo()*/
+            }
         }
     }
 
     suspend fun wasAlreadySent(notificationRequest: NotificationRequest): Deferred<Boolean> = coroutineScope {
         return@coroutineScope async {
-            val result = reactiveValueOps.get(generateKey(notificationRequest)).awaitSingleOrNull()
-            result != null
+            try {
+                val result = reactiveValueOps.get(generateKey(notificationRequest)).awaitSingleOrNull()
+                result != null
+            } catch(t: Throwable) {
+                /* Some problem happened with integration on Redis, if the codes have felt here.
+                 In this case, the application will ignore these validations.
+                 I will put log here later. todo() */
+                false
+            }
         }
     }
 
