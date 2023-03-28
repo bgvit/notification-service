@@ -47,5 +47,5 @@ class NotificationRequestCacheRepository(
     }
 
     private fun generateKey(notificationRequest: NotificationRequest) =
-        notificationRequest.notificationMessage + notificationRequest.accountId
+        notificationRequest.text + notificationRequest.accountId
 }

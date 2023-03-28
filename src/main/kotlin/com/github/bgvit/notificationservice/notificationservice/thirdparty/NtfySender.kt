@@ -25,7 +25,7 @@ class NtfySender(
             val response = webClient
                 .post()
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                .body(Mono.just(notificationRequest.notificationMessage), String::class.java)
+                .body(Mono.just(notificationRequest.text), String::class.java)
                 .retrieve()
                 .awaitBody<NtfyResponse>()
 

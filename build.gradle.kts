@@ -3,8 +3,9 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     id("org.springframework.boot") version "3.0.4"
     id("io.spring.dependency-management") version "1.1.0"
-    kotlin("jvm") version "1.7.22"
-    kotlin("plugin.spring") version "1.7.22"
+    kotlin("jvm") version "1.8.10"
+    kotlin("plugin.spring") version "1.8.10"
+    kotlin("plugin.serialization") version "1.8.10"
     id("org.jlleitschuh.gradle.ktlint") version "11.3.1"
 }
 
@@ -17,6 +18,8 @@ java.sourceCompatibility = JavaVersion.VERSION_17
 
 repositories {
     mavenCentral()
+    maven(url = "https://packages.confluent.io/maven")
+    maven(url = "https://repo.spring.io/plugins-release")
 }
 
 extra["springCloudVersion"] = "2022.0.1"
@@ -36,6 +39,9 @@ dependencies {
     implementation("com.github.ksuid:ksuid:1.1.2")
     // https://mvnrepository.com/artifact/org.springframework.kafka/spring-kafka
     implementation("org.springframework.kafka:spring-kafka:3.0.4")
+    implementation("org.apache.avro:avro:1.11.1")
+    implementation("io.confluent:kafka-schema-registry-client:5.3.0")
+    runtimeOnly("com.github.avro-kotlin.avro4k:avro4k-core:1.7.0")
     runtimeOnly("org.postgresql:postgresql")
     runtimeOnly("org.postgresql:r2dbc-postgresql")
     developmentOnly("org.springframework.boot:spring-boot-devtools")

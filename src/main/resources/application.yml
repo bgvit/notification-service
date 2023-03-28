@@ -16,7 +16,7 @@ spring:
     consumer:
       auto-offset-reset: earliest
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: io.confluent.kafka.serializers.KafkaAvroSerializer
 notification-service:
   ntfy:
     url: 'https://ntfy.sh/'
@@ -26,7 +26,8 @@ notification-service:
   cache:
     ttl: 2
   kafka:
-    topic: notification-consumer
-    group-id: notification-service
-    partition-number: 2
-    replication-factor: 3
+    consumer:
+      topic: notification-consumer
+      group-id: notification-service
+      partition-number: 2
+      replication-factor: 3

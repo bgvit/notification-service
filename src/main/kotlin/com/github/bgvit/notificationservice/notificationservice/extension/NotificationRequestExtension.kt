@@ -11,7 +11,7 @@ fun NotificationRequest.toNotificationEntity(notificationType: NotificationType,
     Notification(
         id = Ksuid.newKsuid().toString(),
         notificationType = notificationType,
-        notificationMessage = this.notificationMessage,
+        notificationMessage = this.text,
         deliveryDate = this.deliveryDate.toZonedDateTime(),
         accountId = this.accountId,
         isReady = this.isReady,

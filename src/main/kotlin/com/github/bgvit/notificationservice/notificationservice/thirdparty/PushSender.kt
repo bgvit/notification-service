@@ -21,7 +21,7 @@ class PushSender(
         return try {
             webClient.post()
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(Mono.just(notification.notificationMessage), String::class.java)
+                .body(Mono.just(notification.text), String::class.java)
                 .retrieve()
 
             true

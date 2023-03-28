@@ -6,7 +6,7 @@ services:
     networks:
       - backend
     ports:
-      - '6379:6379'
+      - '6380:6379'
     restart: always
 
   db:
@@ -52,7 +52,7 @@ services:
       # Mode dev-container uses well-known configuration properties for development in containers.
       - --mode dev-container
       # enable logs for debugging.
-      - --default-log-level=debug
+      - --default-log-level=info
     image: docker.redpanda.com/redpandadata/redpanda:v23.1.1
     volumes:
       - redpanda-0:/var/lib/redpanda/data
@@ -77,7 +77,7 @@ services:
       - --smp 1
       - --memory 1G
       - --mode dev-container
-      - --default-log-level=debug
+      - --default-log-level=info
       - --seeds redpanda-0:33145
     image: docker.redpanda.com/redpandadata/redpanda:v23.1.1
     volumes:
@@ -105,7 +105,7 @@ services:
       - --smp 1
       - --memory 1G
       - --mode dev-container
-      - --default-log-level=debug
+      - --default-log-level=info
       - --seeds redpanda-0:33145
     image: docker.redpanda.com/redpandadata/redpanda:v23.1.1
     volumes:
@@ -143,18 +143,18 @@ services:
     depends_on:
       - redpanda-0
 
-  notification-service:
-    build:
-      dockerfile: Dockerfile
-    image: bgvit/notification-service:2.6
-    networks:
-      - backend
-    ports:
-      - "7000:7000"
-    depends_on:
-      - cache
-      - db
-      - redpanda-0
+#  notification-service:
+#    build:
+#      dockerfile: Dockerfile
+#    image: bgvit/notification-service:2.6
+#    networks:
+#      - backend
+#    ports:
+#      - "7000:7000"
+#    depends_on:
+#      - cache
+#      - db
+#      - redpanda-0
 networks:
   backend:
     driver: bridge
