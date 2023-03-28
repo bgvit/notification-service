@@ -6,7 +6,7 @@ services:
     networks:
       - backend
     ports:
-      - '6380:6379'
+      - '6379:6379'
     restart: always
 
   db:
