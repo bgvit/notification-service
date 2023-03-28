@@ -17,6 +17,8 @@ spring:
       auto-offset-reset: earliest
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: io.confluent.kafka.serializers.KafkaAvroSerializer
+    schema:
+      registry.url: "http://redpanda-0:8081"
 notification-service:
   ntfy:
     url: 'https://ntfy.sh/'

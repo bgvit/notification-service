@@ -12,7 +12,6 @@ import org.springframework.kafka.core.KafkaAdmin
 class RedpandaAdminConfig(
     @Value(value = "\${spring.kafka.bootstrap-servers}")
     private val bootstrapAddress: String,
-
     val consumerProperties: ConsumerProperties
 ) {
 

@@ -3,10 +3,12 @@ package com.github.bgvit.notificationservice.notificationservice.service
 import com.github.bgvit.notificationservice.notificationservice.extension.toNotificationEntity
 import com.github.bgvit.notificationservice.notificationservice.model.NotificationType
 import com.github.bgvit.notificationservice.notificationservice.model.dto.NotificationRequest
+import com.github.bgvit.notificationservice.notificationservice.repository.AccountRepository
 import com.github.bgvit.notificationservice.notificationservice.repository.NotificationRepository
 import com.github.bgvit.notificationservice.notificationservice.repository.impl.NotificationRequestCacheRepository
 import com.github.bgvit.notificationservice.notificationservice.service.factory.NotificationSenderFactory
 import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.reactor.awaitSingle
 import kotlinx.coroutines.reactor.awaitSingleOrNull
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -16,11 +18,20 @@ import org.springframework.stereotype.Service
 class NotificationService(
     val notificationSenderFactory: NotificationSenderFactory,
     val notificationRepository: NotificationRepository,
-    val notificationRequestCacheRepository: NotificationRequestCacheRepository
+    val notificationRequestCacheRepository: NotificationRequestCacheRepository,
+    val accountRepository: AccountRepository
 ) {
 
     suspend fun process(notificationRequest: NotificationRequest): ResponseEntity<String> {
         try {
+            val account = accountRepository.getById(notificationRequest.accountId).awaitSingle()
+
+            if (!account.optIn) {
+                return ResponseEntity
+                    .status(HttpStatus.FORBIDDEN)
+                    .body("This user has optout from the system. This user can't receive notification unless accept optin agreement.")
+            }
+
             val isDuplicated = isDuplicated(notificationRequest)
             val notificationType = NotificationType.valueOf(notificationRequest.notificationType.uppercase())
 
